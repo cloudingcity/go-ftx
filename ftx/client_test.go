@@ -5,6 +5,7 @@ import (
 	"strconv"
 	"testing"
 
+	"github.com/cloudingcity/go-ftx/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/valyala/fasthttp"
 )
@@ -36,6 +37,57 @@ func TestClient_SetSubAccount(t *testing.T) {
 
 		assert.Equal(t, tt.want, c.subAccount)
 	}
+}
+
+func TestClient_Do(t *testing.T) {
+	client, srv, teardown := testutil.Setup()
+	defer teardown() //nolint:errcheck
+
+	const testURL = "http://example.com/"
+
+	c := New()
+	c.client = client
+
+	t.Run("200", func(t *testing.T) {
+		ch := make(chan string, 1)
+
+		srv.Handler = func(ctx *fasthttp.RequestCtx) {
+			ch <- ctx.Request.URI().String()
+			ctx.SetBodyString(`{"foo":"bar"}`)
+		}
+
+		var out struct{ Foo string }
+		err := c.DoPrivate(testURL, http.MethodGet, nil, &out)
+
+		assert.NoError(t, err)
+		assert.Equal(t, testURL, <-ch)
+		assert.Equal(t, "bar", out.Foo)
+	})
+
+	t.Run("not 2xx", func(t *testing.T) {
+		srv.Handler = func(ctx *fasthttp.RequestCtx) {
+			ctx.SetBodyString(`{"error":"something wrong"}`)
+			ctx.SetStatusCode(http.StatusInternalServerError)
+		}
+
+		err := c.DoPrivate(testURL, http.MethodGet, nil, nil)
+
+		assert.Error(t, err)
+		assert.Equal(t, `[500] body: {"error":"something wrong"}`, err.Error())
+	})
+
+	t.Run("POST with body", func(t *testing.T) {
+		ch := make(chan string, 1)
+
+		srv.Handler = func(ctx *fasthttp.RequestCtx) {
+			ch <- string(ctx.Request.Body())
+		}
+
+		in := map[string]string{"foo": "bar"}
+		err := c.DoPublic(testURL, http.MethodPost, &in, nil)
+		assert.NoError(t, err)
+		assert.JSONEq(t, `{"foo":"bar"}`, <-ch)
+	})
 }
 
 // example from https://blog.ftx.com/blog/api-authentication/
