@@ -23,6 +23,10 @@ const (
 	HeaderSubAccount = "FTX-SUBACCOUNT"
 )
 
+type service struct {
+	client *Client
+}
+
 type Client struct {
 	baseURL string
 	client  *fasthttp.Client
@@ -30,6 +34,10 @@ type Client struct {
 	key        string
 	secret     []byte
 	subAccount string
+
+	common service // Reuse a single struct instead of allocating one for each service on the heap.
+
+	Accounts *AccountService
 }
 
 func New(opts ...Option) *Client {
@@ -40,6 +48,8 @@ func New(opts ...Option) *Client {
 	}
 
 	c := &Client{baseURL: defaultBaseURL, client: httpClient}
+	c.common.client = c
+	c.Accounts = (*AccountService)(&c.common)
 
 	for _, opt := range opts {
 		opt(c)
