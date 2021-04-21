@@ -8,9 +8,12 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"net/url"
+	"reflect"
 	"strconv"
 	"time"
 
+	"github.com/google/go-querystring/query"
 	"github.com/valyala/fasthttp"
 )
 
@@ -39,6 +42,7 @@ type Client struct {
 	common service // Reuse a single struct instead of allocating one for each service on the heap.
 
 	Accounts *AccountService
+	Markets  *MarketService
 }
 
 func New(opts ...Option) *Client {
@@ -51,6 +55,7 @@ func New(opts ...Option) *Client {
 	c := &Client{baseURL: defaultBaseURL, client: httpClient}
 	c.common.client = c
 	c.Accounts = (*AccountService)(&c.common)
+	c.Markets = (*MarketService)(&c.common)
 
 	for _, opt := range opts {
 		opt(c)
@@ -138,4 +143,24 @@ func (c *Client) auth(req *fasthttp.Request) {
 	if c.subAccount != "" {
 		req.Header.Set(HeaderSubAccount, c.subAccount)
 	}
+}
+
+func addOptions(s string, opts interface{}) (string, error) {
+	v := reflect.ValueOf(opts)
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return s, nil
+	}
+
+	u, err := url.Parse(s)
+	if err != nil {
+		return s, err
+	}
+
+	qs, err := query.Values(opts)
+	if err != nil {
+		return s, err
+	}
+
+	u.RawQuery = qs.Encode()
+	return u.String(), nil
 }
