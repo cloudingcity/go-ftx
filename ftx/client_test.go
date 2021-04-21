@@ -19,12 +19,12 @@ func TestClient_Do(t *testing.T) {
 	c := New()
 	c.client = client
 
-	t.Run("200", func(t *testing.T) {
+	t.Run("GET success", func(t *testing.T) {
 		ch := make(chan string, 1)
 
 		srv.Handler = func(ctx *fasthttp.RequestCtx) {
 			ch <- ctx.Request.URI().String()
-			ctx.SetBodyString(`{"result":{"foo":"bar"}}`)
+			ctx.SetBodyString(`{"success":true,"result":{"foo":"bar"}}`)
 		}
 
 		var out struct{ Foo string }
@@ -35,22 +35,22 @@ func TestClient_Do(t *testing.T) {
 		assert.Equal(t, "bar", out.Foo)
 	})
 
-	t.Run("not 2xx", func(t *testing.T) {
+	t.Run("failed", func(t *testing.T) {
 		srv.Handler = func(ctx *fasthttp.RequestCtx) {
-			ctx.SetBodyString(`{"error":"something wrong"}`)
-			ctx.SetStatusCode(http.StatusInternalServerError)
+			ctx.SetBodyString(`{"success":false,"error":"something wrong"}`)
 		}
 
 		err := c.DoPrivate(testURL, http.MethodGet, nil, nil)
 
 		assert.Error(t, err)
-		assert.Equal(t, `[500] body: {"error":"something wrong"}`, err.Error())
+		assert.Equal(t, "something wrong", err.Error())
 	})
 
-	t.Run("POST with body", func(t *testing.T) {
+	t.Run("POST success", func(t *testing.T) {
 		ch := make(chan string, 1)
 
 		srv.Handler = func(ctx *fasthttp.RequestCtx) {
+			ctx.SetBodyString(`{"success":true,"result":null}`)
 			ch <- string(ctx.Request.Body())
 		}
 
@@ -58,6 +58,18 @@ func TestClient_Do(t *testing.T) {
 		err := c.DoPublic(testURL, http.MethodPost, &in, nil)
 		assert.NoError(t, err)
 		assert.JSONEq(t, `{"foo":"bar"}`, <-ch)
+	})
+
+	t.Run("wrong body", func(t *testing.T) {
+		srv.Handler = func(ctx *fasthttp.RequestCtx) {
+			ctx.SetBodyString("wrong body")
+			ctx.SetStatusCode(http.StatusInternalServerError)
+		}
+
+		err := c.DoPrivate(testURL, http.MethodGet, nil, nil)
+
+		assert.Error(t, err)
+		assert.Equal(t, "unmarshal: [500] body: wrong body", err.Error())
 	})
 }
 

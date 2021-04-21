@@ -6,6 +6,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -97,15 +98,15 @@ func (c *Client) do(uri string, method string, in, out interface{}, isPrivate bo
 		return err
 	}
 
-	if resp.StatusCode() < 200 || resp.StatusCode() > 299 {
-		return fmt.Errorf("[%v] body: %v", resp.StatusCode(), string(resp.Body()))
-	}
-
+	var data Response
 	if out != nil {
-		data := &Response{Result: out}
-		if err := json.Unmarshal(resp.Body(), &data); err != nil {
-			return err
-		}
+		data.Result = out
+	}
+	if err := json.Unmarshal(resp.Body(), &data); err != nil {
+		return fmt.Errorf("unmarshal: [%v] body: %v", resp.StatusCode(), string(resp.Body()))
+	}
+	if !data.Success {
+		return errors.New(data.Error)
 	}
 
 	return nil
