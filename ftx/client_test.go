@@ -24,7 +24,7 @@ func TestClient_Do(t *testing.T) {
 
 		srv.Handler = func(ctx *fasthttp.RequestCtx) {
 			ch <- ctx.Request.URI().String()
-			ctx.SetBodyString(`{"foo":"bar"}`)
+			ctx.SetBodyString(`{"result":{"foo":"bar"}}`)
 		}
 
 		var out struct{ Foo string }

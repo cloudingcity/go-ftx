@@ -56,6 +56,12 @@ func (c *Client) DoPrivate(uri string, method string, in, out interface{}) error
 	return c.do(uri, method, in, out, true)
 }
 
+type Response struct {
+	Success bool        `json:"success"`
+	Result  interface{} `json:"result,omitempty"`
+	Error   string      `json:"error,omitempty"`
+}
+
 func (c *Client) do(uri string, method string, in, out interface{}, isPrivate bool) error {
 	req, resp := fasthttp.AcquireRequest(), fasthttp.AcquireResponse()
 	defer func() {
@@ -86,7 +92,8 @@ func (c *Client) do(uri string, method string, in, out interface{}, isPrivate bo
 	}
 
 	if out != nil {
-		if err := json.Unmarshal(resp.Body(), out); err != nil {
+		data := &Response{Result: out}
+		if err := json.Unmarshal(resp.Body(), &data); err != nil {
 			return err
 		}
 	}
