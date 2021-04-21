@@ -10,35 +10,6 @@ import (
 	"github.com/valyala/fasthttp"
 )
 
-func TestClient_SetAuth(t *testing.T) {
-	const (
-		key    = "api-key"
-		secret = "api-secret"
-	)
-	c := New()
-	c.SetAuth(key, secret)
-
-	assert.Equal(t, c.key, key)
-	assert.Equal(t, c.secret, []byte(secret))
-}
-
-func TestClient_SetSubAccount(t *testing.T) {
-	c := New()
-
-	tests := []struct {
-		account string
-		want    string
-	}{
-		{account: "my-account", want: "my-account"},
-		{account: "my/account", want: "my%2Faccount"},
-	}
-	for _, tt := range tests {
-		c.SetSubAccount(tt.account)
-
-		assert.Equal(t, tt.want, c.subAccount)
-	}
-}
-
 func TestClient_Do(t *testing.T) {
 	client, srv, teardown := testutil.Setup()
 	defer teardown() //nolint:errcheck
@@ -98,9 +69,7 @@ func TestClient_auth(t *testing.T) {
 		subaccount = "my-account"
 	)
 
-	c := New()
-	c.SetAuth(key, secret)
-	c.SetSubAccount(subaccount)
+	c := New(WithAuth(key, secret), WithSubAccount(subaccount))
 
 	t.Run("GET signature", func(t *testing.T) {
 		req := fasthttp.AcquireRequest()

@@ -13,14 +13,21 @@ func TestWithAuth(t *testing.T) {
 	)
 	c := New(WithAuth(key, secret))
 
-	assert.Equal(t, c.key, key)
-	assert.Equal(t, c.secret, []byte(secret))
+	assert.Equal(t, key, c.key)
+	assert.Equal(t, []byte(secret), c.secret)
 }
 
 func TestWithSubAccount(t *testing.T) {
-	const account = "my-account"
+	tests := []struct {
+		account string
+		want    string
+	}{
+		{account: "my-account", want: "my-account"},
+		{account: "my/account", want: "my%2Faccount"},
+	}
+	for _, tt := range tests {
+		c := New(WithSubAccount(tt.account))
 
-	c := New(WithSubAccount(account))
-
-	assert.Equal(t, c.subAccount, account)
+		assert.Equal(t, tt.want, c.subAccount)
+	}
 }

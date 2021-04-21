@@ -7,7 +7,6 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
-	"net/url"
 	"strconv"
 	"time"
 
@@ -47,15 +46,6 @@ func New(opts ...Option) *Client {
 	}
 
 	return c
-}
-
-func (c *Client) SetAuth(key, secret string) {
-	c.key = key
-	c.secret = []byte(secret)
-}
-
-func (c *Client) SetSubAccount(account string) {
-	c.subAccount = url.QueryEscape(account)
 }
 
 func (c *Client) DoPublic(uri string, method string, in, out interface{}) error {
