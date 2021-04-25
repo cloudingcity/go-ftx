@@ -8,12 +8,9 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"net/url"
-	"reflect"
 	"strconv"
 	"time"
 
-	"github.com/google/go-querystring/query"
 	"github.com/valyala/fasthttp"
 )
 
@@ -143,24 +140,4 @@ func (c *Client) auth(req *fasthttp.Request) {
 	if c.subAccount != "" {
 		req.Header.Set(HeaderSubAccount, c.subAccount)
 	}
-}
-
-func addOptions(s string, opts interface{}) (string, error) {
-	v := reflect.ValueOf(opts)
-	if v.Kind() == reflect.Ptr && v.IsNil() {
-		return s, nil
-	}
-
-	u, err := url.Parse(s)
-	if err != nil {
-		return s, err
-	}
-
-	qs, err := query.Values(opts)
-	if err != nil {
-		return s, err
-	}
-
-	u.RawQuery = qs.Encode()
-	return u.String(), nil
 }
