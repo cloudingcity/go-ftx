@@ -5,19 +5,15 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/cloudingcity/go-ftx/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/valyala/fasthttp"
 )
 
 func TestClient_Do(t *testing.T) {
-	client, srv, teardown := testutil.Setup()
+	c, srv, teardown := setup()
 	defer teardown()
 
 	const testURL = "http://example.com/"
-
-	c := New()
-	c.client = client
 
 	t.Run("GET success", func(t *testing.T) {
 		ch := make(chan string, 1)

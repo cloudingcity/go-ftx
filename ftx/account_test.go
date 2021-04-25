@@ -3,18 +3,13 @@ package ftx
 import (
 	"testing"
 
-	"github.com/cloudingcity/go-ftx/testutil"
 	"github.com/stretchr/testify/assert"
 	"github.com/valyala/fasthttp"
 )
 
 func TestAccountService_GetInformation(t *testing.T) {
-	client, srv, teardown := testutil.Setup()
+	c, srv, teardown := setup()
 	defer teardown()
-
-	c := New()
-	c.baseURL = "http://example.com/"
-	c.client = client
 
 	srv.Handler = func(ctx *fasthttp.RequestCtx) {
 		ctx.SetBodyString(`{"success":true,"result":{"username":"john@example.com"}}`)
@@ -27,12 +22,8 @@ func TestAccountService_GetInformation(t *testing.T) {
 }
 
 func TestAccountService_GetPositions(t *testing.T) {
-	client, srv, teardown := testutil.Setup()
+	c, srv, teardown := setup()
 	defer teardown()
-
-	c := New()
-	c.baseURL = "http://example.com/"
-	c.client = client
 
 	srv.Handler = func(ctx *fasthttp.RequestCtx) {
 		ctx.SetBodyString(`{"success":true,"result":[{"future":"ETH-PERP"}]}`)
@@ -45,12 +36,8 @@ func TestAccountService_GetPositions(t *testing.T) {
 }
 
 func TestAccountService_SetLeverage(t *testing.T) {
-	client, srv, teardown := testutil.Setup()
+	c, srv, teardown := setup()
 	defer teardown()
-
-	c := New()
-	c.baseURL = "http://example.com/"
-	c.client = client
 
 	ch := make(chan string, 1)
 
