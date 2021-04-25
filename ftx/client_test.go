@@ -65,7 +65,7 @@ func TestClient_Do(t *testing.T) {
 		err := c.DoPrivate(testURL, http.MethodGet, nil, nil)
 
 		assert.Error(t, err)
-		assert.Equal(t, "unmarshal: [500] body: wrong body", err.Error())
+		assert.Equal(t, "unmarshal: [500] body: wrong body, error: invalid character 'w' looking for beginning of value", err.Error())
 	})
 }
 

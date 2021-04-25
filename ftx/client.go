@@ -105,7 +105,7 @@ func (c *Client) do(uri string, method string, in, out interface{}, isPrivate bo
 		data.Result = out
 	}
 	if err := json.Unmarshal(resp.Body(), &data); err != nil {
-		return fmt.Errorf("unmarshal: [%v] body: %v", resp.StatusCode(), string(resp.Body()))
+		return fmt.Errorf("unmarshal: [%v] body: %v, error: %v", resp.StatusCode(), string(resp.Body()), err)
 	}
 	if !data.Success {
 		return errors.New(data.Error)
