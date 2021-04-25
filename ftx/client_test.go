@@ -12,7 +12,7 @@ import (
 
 func TestClient_Do(t *testing.T) {
 	client, srv, teardown := testutil.Setup()
-	defer teardown() //nolint:errcheck
+	defer teardown()
 
 	const testURL = "http://example.com/"
 

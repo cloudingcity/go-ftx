@@ -7,7 +7,7 @@ import (
 	"github.com/valyala/fasthttp/fasthttputil"
 )
 
-func Setup() (client *fasthttp.Client, srv *fasthttp.Server, teardown func() error) {
+func Setup() (client *fasthttp.Client, srv *fasthttp.Server, teardown func()) {
 	ln := fasthttputil.NewInmemoryListener()
 	srv = &fasthttp.Server{}
 	go srv.Serve(ln) //nolint:errcheck
@@ -16,5 +16,5 @@ func Setup() (client *fasthttp.Client, srv *fasthttp.Server, teardown func() err
 		Dial: func(addr string) (net.Conn, error) {
 			return ln.Dial()
 		},
-	}, srv, ln.Close
+	}, srv, func() { _ = ln.Close() }
 }
