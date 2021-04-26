@@ -36,10 +36,8 @@ func (s *AccountService) GetInformation() (*Account, error) {
 	u := fmt.Sprintf(pathAccount, s.client.baseURL)
 
 	var out Account
-	if err := s.client.DoPrivate(u, http.MethodGet, nil, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
+	err := s.client.DoPrivate(u, http.MethodGet, nil, &out)
+	return &out, err
 }
 
 type Position struct {
@@ -65,10 +63,8 @@ func (s *AccountService) GetPositions() ([]Position, error) {
 	u := fmt.Sprintf(pathPositions, s.client.baseURL)
 
 	var out []Position
-	if err := s.client.DoPrivate(u, http.MethodGet, nil, &out); err != nil {
-		return nil, err
-	}
-	return out, nil
+	err := s.client.DoPrivate(u, http.MethodGet, nil, &out)
+	return out, err
 }
 
 const (

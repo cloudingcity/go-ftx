@@ -21,10 +21,8 @@ func (s *MarketService) All() ([]Market, error) {
 	u := fmt.Sprintf(pathMarkets, s.client.baseURL)
 
 	var out []Market
-	if err := s.client.DoPublic(u, http.MethodGet, nil, &out); err != nil {
-		return nil, err
-	}
-	return out, nil
+	err := s.client.DoPublic(u, http.MethodGet, nil, &out)
+	return out, err
 }
 
 type Market struct {
@@ -48,10 +46,8 @@ func (s *MarketService) Get(name string) (*Market, error) {
 	u := fmt.Sprintf(pathMarket, s.client.baseURL, name)
 
 	var out Market
-	if err := s.client.DoPublic(u, http.MethodGet, nil, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
+	err := s.client.DoPublic(u, http.MethodGet, nil, &out)
+	return &out, err
 }
 
 type OrderBook struct {
@@ -72,10 +68,8 @@ func (s *MarketService) GetOrderBook(name string, opts *GetOrderBookOptions) (*O
 	}
 
 	var out OrderBook
-	if err := s.client.DoPublic(u, http.MethodGet, nil, &out); err != nil {
-		return nil, err
-	}
-	return &out, nil
+	err = s.client.DoPublic(u, http.MethodGet, nil, &out)
+	return &out, err
 }
 
 type Trade struct {
@@ -102,10 +96,8 @@ func (s *MarketService) GetTrades(name string, opts *GetTradesOptions) ([]Trade,
 	}
 
 	var out []Trade
-	if err := s.client.DoPublic(u, http.MethodGet, nil, &out); err != nil {
-		return nil, err
-	}
-	return out, nil
+	err = s.client.DoPublic(u, http.MethodGet, nil, &out)
+	return out, err
 }
 
 type Candle struct {
@@ -143,8 +135,6 @@ func (s *MarketService) GetHistoricalPrices(name string, opts *GetHistoricalPric
 	}
 
 	var out []Candle
-	if err := s.client.DoPublic(u, http.MethodGet, nil, &out); err != nil {
-		return nil, err
-	}
-	return out, nil
+	err = s.client.DoPublic(u, http.MethodGet, nil, &out)
+	return out, err
 }
