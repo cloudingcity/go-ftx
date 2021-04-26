@@ -61,7 +61,7 @@ func TestMarketService_GetTrades(t *testing.T) {
 	trades, err := c.Markets.GetTrades("BTC/USD", nil)
 
 	assert.NoError(t, err)
-	assert.Equal(t, 123456, trades[0].Id)
+	assert.Equal(t, 123456, trades[0].ID)
 }
 
 func TestMarketService_GetHistoricalPrices(t *testing.T) {

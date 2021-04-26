@@ -79,7 +79,7 @@ func (s *MarketService) GetOrderBook(name string, opts *GetOrderBookOptions) (*O
 }
 
 type Trade struct {
-	Id          int       `json:"id"`
+	ID          int       `json:"id"`
 	Liquidation bool      `json:"liquidation"`
 	Price       float64   `json:"price"`
 	Side        string    `json:"side"`
