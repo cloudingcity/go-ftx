@@ -4,11 +4,16 @@ import (
 	"net"
 	"net/url"
 	"reflect"
+	"time"
 
 	"github.com/google/go-querystring/query"
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/fasthttputil"
 )
+
+var unixTime = func() int64 {
+	return time.Now().UnixNano() / int64(time.Millisecond)
+}
 
 func setup() (client *Client, srv *fasthttp.Server, teardown func()) {
 	ln := fasthttputil.NewInmemoryListener()

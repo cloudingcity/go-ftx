@@ -114,10 +114,6 @@ func (c *Client) do(uri string, method string, in, out interface{}, isPrivate bo
 	return nil
 }
 
-var unixTime = func() int64 {
-	return time.Now().UnixNano() / int64(time.Millisecond)
-}
-
 // FTX API Authentication docs: https://blog.ftx.com/blog/api-authentication/
 func (c *Client) auth(req *fasthttp.Request) {
 	var payload bytes.Buffer
