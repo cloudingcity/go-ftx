@@ -11,12 +11,15 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/gorilla/websocket"
 	"github.com/valyala/fasthttp"
 )
 
 const (
-	defaultBaseURL = "https://ftx.com/api"
-	userAgent      = "go-ftx"
+	defaultBaseURL   = "https://ftx.com/api"
+	defaultBaseWSURL = "wss://ftx.com/ws"
+
+	userAgent = "go-ftx"
 
 	HeaderKey        = "FTX-KEY"
 	HeaderSign       = "FTX-SIGN"
@@ -136,4 +139,12 @@ func (c *Client) auth(req *fasthttp.Request) {
 	if c.subAccount != "" {
 		req.Header.Set(HeaderSubAccount, c.subAccount)
 	}
+}
+
+func (c *Client) Connect() (*Conn, error) {
+	conn, _, err := websocket.DefaultDialer.Dial(defaultBaseWSURL, nil)
+	if err != nil {
+		return nil, err
+	}
+	return &Conn{conn: conn}, nil
 }

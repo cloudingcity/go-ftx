@@ -1,6 +1,8 @@
 package ftx
 
 import (
+	"encoding/json"
+	"math"
 	"net"
 	"net/url"
 	"reflect"
@@ -10,6 +12,21 @@ import (
 	"github.com/valyala/fasthttp"
 	"github.com/valyala/fasthttp/fasthttputil"
 )
+
+type Time struct {
+	time.Time
+}
+
+func (t *Time) UnmarshalJSON(data []byte) error {
+	var f float64
+	if err := json.Unmarshal(data, &f); err != nil {
+		return err
+	}
+
+	sec, nsec := math.Modf(f)
+	t.Time = time.Unix(int64(sec), int64(nsec))
+	return nil
+}
 
 var unixTime = func() int64 {
 	return time.Now().UnixNano() / int64(time.Millisecond)

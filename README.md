@@ -47,6 +47,57 @@ client := ftx.New(
 account, err := client.Accounts.GetInformation()
 ```
 
+### Websocket
+
+```go
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/cloudingcity/go-ftx/ftx"
+)
+
+func main() {
+	c := ftx.New()
+	conn, err := c.Connect()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := conn.Ping(); err != nil {
+		log.Fatal(err)
+	}
+	if err := conn.Subscribe(ftx.ChannelTicker, "BTC/USD"); err != nil {
+		log.Fatal(err)
+	}
+
+	for {
+		resp, err := conn.Recv()
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		switch v := resp.(type) {
+		case ftx.WSCommon:
+			fmt.Println("common:", v)
+		case ftx.WSPong:
+			fmt.Println("pong:", v)
+		case ftx.WSOrderBook:
+			fmt.Println("orderbook:", v)
+		case ftx.WSTrade:
+			fmt.Println("trade:", v)
+		case ftx.WSTicker:
+			fmt.Println("ticker:", v)
+		case ftx.WSError:
+			fmt.Println("error:", v)
+		}
+	}
+}
+```
+
 ## Todos
 
 - [ ] REST API
@@ -64,4 +115,11 @@ account, err := client.Accounts.GetInformation()
     - [ ] Options
     - [ ] Staking
 - [ ] Websocket API
-- [ ] FTX API
+    - [x] Ping
+    - [x] OrderBooks
+    - [x] Trade
+    - [x] Ticker
+    - [ ] Markets
+    - [ ] Grouped Orderbooks
+    - [ ] Fills
+    - [ ] Orders
