@@ -37,14 +37,29 @@ func main() {
 
 ## Examples
 
-### Get Private Resource
+### REST API
 
 ```go
-client := ftx.New(
-    ftx.WithAuth("your-api-key", "your-api-secret"),
-    ftx.WithSubaccount("your-subaccount"), // Omit if not using subaccounts
+package main
+
+import (
+	"fmt"
+	"log"
+
+	"github.com/cloudingcity/go-ftx/ftx"
 )
-account, err := client.Accounts.GetInformation()
+
+func main() {
+	client := ftx.New(
+		ftx.WithAuth("your-api-key", "your-api-secret"),
+		ftx.WithSubaccount("your-subaccount"), // Omit if not using subaccounts
+	)
+	account, err := client.Accounts.GetInformation()
+	if err != nil {
+		log.Fatal()
+	}
+	fmt.Printf("%+v", account)
+}
 ```
 
 ### Websocket
@@ -53,49 +68,72 @@ account, err := client.Accounts.GetInformation()
 package main
 
 import (
-  "fmt"
-  "log"
+	"fmt"
+	"log"
 
-  "github.com/cloudingcity/go-ftx/ftx"
-  "github.com/cloudingcity/go-ftx/ftx/stream"
+	"github.com/cloudingcity/go-ftx/ftx"
+	"github.com/cloudingcity/go-ftx/ftx/stream"
 )
 
 func main() {
-  c := ftx.New()
-  conn, err := c.Connect()
-  if err != nil {
-    log.Fatal(err)
-  }
+	client := ftx.New(
+		ftx.WithAuth("your-api-key", "your-api-secret"),
+		ftx.WithSubaccount("your-subaccount"), // Omit if not using subaccounts
+	)
+	conn, err := client.Connect()
+	if err != nil {
+		log.Fatal(err)
+	}
 
-  if err := conn.Ping(); err != nil {
-    log.Fatal(err)
-  }
-  if err := conn.Subscribe(stream.ChannelTicker, "BTC/USD"); err != nil {
-    log.Fatal(err)
-  }
+	if err := conn.Ping(); err != nil {
+		log.Fatal(err)
+	}
 
-  for {
-    resp, err := conn.Recv()
-    if err != nil {
-      log.Fatal(err)
-      return
-    }
+	// Public Channels
+	if err := conn.Subscribe(stream.ChannelTicker, "BTC/USD"); err != nil {
+		log.Fatal(err)
+	}
+	if err := conn.Subscribe(stream.ChannelTrades, "BTC/USD"); err != nil {
+		log.Fatal(err)
+	}
 
-    switch v := resp.(type) {
-    case stream.General:
-      fmt.Println("general:", v)
-    case stream.Pong:
-      fmt.Println("pong:", v)
-    case stream.OrderBook:
-      fmt.Println("orderbook:", v)
-    case stream.Trade:
-      fmt.Println("trade:", v)
-    case stream.Ticker:
-      fmt.Println("ticker:", v)
-    case stream.Error:
-      fmt.Println("error:", v)
-    }
-  }
+	// Private Channels
+	if err := conn.Login(); err != nil {
+		log.Fatal(err)
+	}
+	if err := conn.Subscribe(stream.ChannelFills); err != nil {
+		log.Fatal(err)
+	}
+	if err := conn.Subscribe(stream.ChannelOrders); err != nil {
+		log.Fatal(err)
+	}
+
+	for {
+		resp, err := conn.Recv()
+		if err != nil {
+			log.Fatal(err)
+			return
+		}
+
+		switch v := resp.(type) {
+		case stream.General:
+			fmt.Println("general:", v)
+		case stream.Pong:
+			fmt.Println("pong:", v)
+		case stream.OrderBook:
+			fmt.Println("orderbook:", v)
+		case stream.Trade:
+			fmt.Println("trade:", v)
+		case stream.Ticker:
+			fmt.Println("ticker:", v)
+		case stream.Fills:
+			fmt.Println("fills:", v)
+		case stream.Orders:
+			fmt.Println("orders:", v)
+		case stream.Error:
+			fmt.Println("error:", v)
+		}
+	}
 }
 ```
 
@@ -122,5 +160,5 @@ func main() {
     - [x] Ticker
     - [ ] Markets
     - [ ] Grouped Orderbooks
-    - [ ] Fills
-    - [ ] Orders
+    - [x] Fills
+    - [x] Orders
