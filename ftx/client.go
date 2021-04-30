@@ -25,7 +25,7 @@ const (
 	HeaderKey        = "FTX-KEY"
 	HeaderSign       = "FTX-SIGN"
 	HeaderTS         = "FTX-TS"
-	HeaderSubAccount = "FTX-SUBACCOUNT"
+	HeaderSubaccount = "FTX-SUBACCOUNT"
 )
 
 type service struct {
@@ -38,7 +38,7 @@ type Client struct {
 
 	key        string
 	secret     []byte
-	subAccount string
+	subaccount string
 
 	common service // Reuse a single struct instead of allocating one for each service on the heap.
 
@@ -137,8 +137,8 @@ func (c *Client) auth(req *fasthttp.Request) {
 	req.Header.Set(HeaderKey, c.key)
 	req.Header.Set(HeaderSign, hex.EncodeToString(hash.Sum(nil)))
 	req.Header.Set(HeaderTS, ts)
-	if c.subAccount != "" {
-		req.Header.Set(HeaderSubAccount, c.subAccount)
+	if c.subaccount != "" {
+		req.Header.Set(HeaderSubaccount, c.subaccount)
 	}
 }
 

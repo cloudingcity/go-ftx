@@ -42,7 +42,7 @@ func main() {
 ```go
 client := ftx.New(
     ftx.WithAuth("your-api-key", "your-api-secret"),
-    ftx.WithSubAccount("your-subaccount"), // Omit if not using subaccounts
+    ftx.WithSubaccount("your-subaccount"), // Omit if not using subaccounts
 )
 account, err := client.Accounts.GetInformation()
 ```

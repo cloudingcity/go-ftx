@@ -77,7 +77,7 @@ func TestClient_auth(t *testing.T) {
 		subaccount = "my-account"
 	)
 
-	c := New(WithAuth(key, secret), WithSubAccount(subaccount))
+	c := New(WithAuth(key, secret), WithSubaccount(subaccount))
 
 	t.Run("GET signature", func(t *testing.T) {
 		req := fasthttp.AcquireRequest()
@@ -94,7 +94,7 @@ func TestClient_auth(t *testing.T) {
 		assert.EqualValues(t, key, req.Header.Peek(HeaderKey))
 		assert.EqualValues(t, "dbc62ec300b2624c580611858d94f2332ac636bb86eccfa1167a7777c496ee6f", req.Header.Peek(HeaderSign))
 		assert.EqualValues(t, strconv.Itoa(ts), req.Header.Peek(HeaderTS))
-		assert.EqualValues(t, subaccount, req.Header.Peek(HeaderSubAccount))
+		assert.EqualValues(t, subaccount, req.Header.Peek(HeaderSubaccount))
 	})
 
 	t.Run("POST signature", func(t *testing.T) {
@@ -113,6 +113,6 @@ func TestClient_auth(t *testing.T) {
 		assert.EqualValues(t, key, req.Header.Peek(HeaderKey))
 		assert.EqualValues(t, "c4fbabaf178658a59d7bbf57678d44c369382f3da29138f04cd46d3d582ba4ba", req.Header.Peek(HeaderSign))
 		assert.EqualValues(t, strconv.Itoa(ts), req.Header.Peek(HeaderTS))
-		assert.EqualValues(t, subaccount, req.Header.Peek(HeaderSubAccount))
+		assert.EqualValues(t, subaccount, req.Header.Peek(HeaderSubaccount))
 	})
 }

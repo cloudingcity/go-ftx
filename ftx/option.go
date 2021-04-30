@@ -11,8 +11,8 @@ func WithAuth(key, secret string) Option {
 	}
 }
 
-func WithSubAccount(account string) Option {
+func WithSubaccount(account string) Option {
 	return func(c *Client) {
-		c.subAccount = url.QueryEscape(account)
+		c.subaccount = url.QueryEscape(account)
 	}
 }

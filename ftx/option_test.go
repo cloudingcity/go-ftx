@@ -17,7 +17,7 @@ func TestWithAuth(t *testing.T) {
 	assert.Equal(t, []byte(secret), c.secret)
 }
 
-func TestWithSubAccount(t *testing.T) {
+func TestWithSubaccount(t *testing.T) {
 	tests := []struct {
 		account string
 		want    string
@@ -26,8 +26,8 @@ func TestWithSubAccount(t *testing.T) {
 		{account: "my/account", want: "my%2Faccount"},
 	}
 	for _, tt := range tests {
-		c := New(WithSubAccount(tt.account))
+		c := New(WithSubaccount(tt.account))
 
-		assert.Equal(t, tt.want, c.subAccount)
+		assert.Equal(t, tt.want, c.subaccount)
 	}
 }
