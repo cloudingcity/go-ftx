@@ -137,23 +137,25 @@ func (c *Conn) auth(req *connRequest) error {
 	return nil
 }
 
-func (c *Conn) Subscribe(channel, market string) error {
+func (c *Conn) Subscribe(channel string, market ...string) error {
+	if len(market) >= 1 {
+		return c.conn.WriteJSON(
+			&connRequest{OP: "subscribe", Channel: channel, Market: market[0]},
+		)
+	}
 	return c.conn.WriteJSON(
-		&connRequest{
-			OP:      "subscribe",
-			Channel: channel,
-			Market:  market,
-		},
+		&connRequest{OP: "subscribe", Channel: channel},
 	)
 }
 
-func (c *Conn) Unsubscribe(channel, market string) error {
+func (c *Conn) Unsubscribe(channel string, market ...string) error {
+	if len(market) >= 1 {
+		return c.conn.WriteJSON(
+			&connRequest{OP: "unsubscribe", Channel: channel, Market: market[0]},
+		)
+	}
 	return c.conn.WriteJSON(
-		&connRequest{
-			OP:      "unsubscribe",
-			Channel: channel,
-			Market:  market,
-		},
+		&connRequest{OP: "unsubscribe", Channel: channel},
 	)
 }
 
