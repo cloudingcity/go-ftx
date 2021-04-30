@@ -71,15 +71,15 @@ func (c *Conn) Recv() (interface{}, error) {
 	}
 
 	switch resp.Channel {
-	case "orderbook":
+	case ChannelOrderBook:
 		v := OrderBook{General: General{Type: resp.Type, Channel: resp.Channel, Market: resp.Market}}
 		err := json.Unmarshal(resp.Data, &v.Data)
 		return v, err
-	case "trades":
+	case ChannelTrades:
 		v := Trade{General: General{Type: resp.Type, Channel: resp.Channel, Market: resp.Market}}
 		err := json.Unmarshal(resp.Data, &v.Data)
 		return v, err
-	case "ticker":
+	case ChannelTicker:
 		v := Ticker{General: General{Type: resp.Type, Channel: resp.Channel, Market: resp.Market}}
 		err := json.Unmarshal(resp.Data, &v.Data)
 		return v, err
