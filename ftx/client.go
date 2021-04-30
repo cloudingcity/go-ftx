@@ -147,5 +147,5 @@ func (c *Client) Connect() (*stream.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &stream.Conn{Conn: conn}, nil
+	return stream.New(conn), nil
 }

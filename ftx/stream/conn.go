@@ -29,12 +29,16 @@ type ConnResponse struct {
 }
 
 type Conn struct {
-	Conn *websocket.Conn
+	conn *websocket.Conn
+}
+
+func New(conn *websocket.Conn) *Conn {
+	return &Conn{conn: conn}
 }
 
 func (c *Conn) Recv() (interface{}, error) {
 	var resp ConnResponse
-	if err := c.Conn.ReadJSON(&resp); err != nil {
+	if err := c.conn.ReadJSON(&resp); err != nil {
 		return nil, err
 	}
 
@@ -69,11 +73,11 @@ func (c *Conn) Recv() (interface{}, error) {
 }
 
 func (c *Conn) Ping() error {
-	return c.Conn.WriteJSON(&ConnRequest{OP: "ping"})
+	return c.conn.WriteJSON(&ConnRequest{OP: "ping"})
 }
 
 func (c *Conn) Subscribe(channel, market string) error {
-	return c.Conn.WriteJSON(
+	return c.conn.WriteJSON(
 		&ConnRequest{
 			OP:      "subscribe",
 			Channel: channel,
@@ -83,7 +87,7 @@ func (c *Conn) Subscribe(channel, market string) error {
 }
 
 func (c *Conn) Unsubscribe(channel, market string) error {
-	return c.Conn.WriteJSON(
+	return c.conn.WriteJSON(
 		&ConnRequest{
 			OP:      "unsubscribe",
 			Channel: channel,
@@ -93,5 +97,5 @@ func (c *Conn) Unsubscribe(channel, market string) error {
 }
 
 func (c *Conn) Close() error {
-	return c.Conn.Close()
+	return c.conn.Close()
 }
