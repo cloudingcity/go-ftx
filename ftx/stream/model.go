@@ -71,3 +71,23 @@ type Ticker struct {
 		Time    *Time   `json:"time"`
 	} `json:"data"`
 }
+
+type Fills struct {
+	Type    string `json:"type"`
+	Channel string `json:"channel"`
+	Data    struct {
+		Fee       float64   `json:"fee"`
+		FeeRate   float64   `json:"feeRate"`
+		Future    string    `json:"future"`
+		ID        int       `json:"id"`
+		Liquidity string    `json:"liquidity"`
+		Market    string    `json:"market"`
+		OrderID   int       `json:"orderId"`
+		TradeID   int       `json:"tradeId"`
+		Price     float64   `json:"price"`
+		Side      string    `json:"side"`
+		Size      float64   `json:"size"`
+		Time      time.Time `json:"time"`
+		Type      string    `json:"type"`
+	} `json:"data"`
+}

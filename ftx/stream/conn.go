@@ -16,6 +16,7 @@ const (
 	ChannelOrderBook = "orderbook"
 	ChannelTrades    = "trades"
 	ChannelTicker    = "ticker"
+	ChannelFills     = "fills"
 )
 
 type connRequest struct {
@@ -81,6 +82,10 @@ func (c *Conn) Recv() (interface{}, error) {
 		return v, err
 	case ChannelTicker:
 		v := Ticker{General: General{Type: resp.Type, Channel: resp.Channel, Market: resp.Market}}
+		err := json.Unmarshal(resp.Data, &v.Data)
+		return v, err
+	case ChannelFills:
+		v := Fills{Type: resp.Type, Channel: resp.Channel}
 		err := json.Unmarshal(resp.Data, &v.Data)
 		return v, err
 	default:
