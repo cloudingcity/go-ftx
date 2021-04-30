@@ -13,13 +13,13 @@ const (
 	ChannelTicker    = "ticker"
 )
 
-type ConnRequest struct {
+type connRequest struct {
 	OP      string `json:"op"`
 	Channel string `json:"channel,omitempty"`
 	Market  string `json:"market,omitempty"`
 }
 
-type ConnResponse struct {
+type connResponse struct {
 	Type    string          `json:"type"`
 	Channel string          `json:"channel,omitempty"`
 	Market  string          `json:"market,omitempty"`
@@ -37,7 +37,7 @@ func New(conn *websocket.Conn) *Conn {
 }
 
 func (c *Conn) Recv() (interface{}, error) {
-	var resp ConnResponse
+	var resp connResponse
 	if err := c.conn.ReadJSON(&resp); err != nil {
 		return nil, err
 	}
@@ -73,12 +73,12 @@ func (c *Conn) Recv() (interface{}, error) {
 }
 
 func (c *Conn) Ping() error {
-	return c.conn.WriteJSON(&ConnRequest{OP: "ping"})
+	return c.conn.WriteJSON(&connRequest{OP: "ping"})
 }
 
 func (c *Conn) Subscribe(channel, market string) error {
 	return c.conn.WriteJSON(
-		&ConnRequest{
+		&connRequest{
 			OP:      "subscribe",
 			Channel: channel,
 			Market:  market,
@@ -88,7 +88,7 @@ func (c *Conn) Subscribe(channel, market string) error {
 
 func (c *Conn) Unsubscribe(channel, market string) error {
 	return c.conn.WriteJSON(
-		&ConnRequest{
+		&connRequest{
 			OP:      "unsubscribe",
 			Channel: channel,
 			Market:  market,
