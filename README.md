@@ -53,48 +53,49 @@ account, err := client.Accounts.GetInformation()
 package main
 
 import (
-	"fmt"
-	"log"
+  "fmt"
+  "log"
 
-	"github.com/cloudingcity/go-ftx/ftx"
+  "github.com/cloudingcity/go-ftx/ftx"
+  "github.com/cloudingcity/go-ftx/ftx/stream"
 )
 
 func main() {
-	c := ftx.New()
-	conn, err := c.Connect()
-	if err != nil {
-		log.Fatal(err)
-	}
+  c := ftx.New()
+  conn, err := c.Connect()
+  if err != nil {
+    log.Fatal(err)
+  }
 
-	if err := conn.Ping(); err != nil {
-		log.Fatal(err)
-	}
-	if err := conn.Subscribe(ftx.ChannelTicker, "BTC/USD"); err != nil {
-		log.Fatal(err)
-	}
+  if err := conn.Ping(); err != nil {
+    log.Fatal(err)
+  }
+  if err := conn.Subscribe(stream.ChannelTicker, "BTC/USD"); err != nil {
+    log.Fatal(err)
+  }
 
-	for {
-		resp, err := conn.Recv()
-		if err != nil {
-			log.Fatal(err)
-			return
-		}
+  for {
+    resp, err := conn.Recv()
+    if err != nil {
+      log.Fatal(err)
+      return
+    }
 
-		switch v := resp.(type) {
-		case ftx.WSCommon:
-			fmt.Println("common:", v)
-		case ftx.WSPong:
-			fmt.Println("pong:", v)
-		case ftx.WSOrderBook:
-			fmt.Println("orderbook:", v)
-		case ftx.WSTrade:
-			fmt.Println("trade:", v)
-		case ftx.WSTicker:
-			fmt.Println("ticker:", v)
-		case ftx.WSError:
-			fmt.Println("error:", v)
-		}
-	}
+    switch v := resp.(type) {
+    case stream.General:
+      fmt.Println("general:", v)
+    case stream.Pong:
+      fmt.Println("pong:", v)
+    case stream.OrderBook:
+      fmt.Println("orderbook:", v)
+    case stream.Trade:
+      fmt.Println("trade:", v)
+    case stream.Ticker:
+      fmt.Println("ticker:", v)
+    case stream.Error:
+      fmt.Println("error:", v)
+    }
+  }
 }
 ```
 

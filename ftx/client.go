@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/cloudingcity/go-ftx/ftx/stream"
 	"github.com/gorilla/websocket"
 	"github.com/valyala/fasthttp"
 )
@@ -141,10 +142,10 @@ func (c *Client) auth(req *fasthttp.Request) {
 	}
 }
 
-func (c *Client) Connect() (*Conn, error) {
+func (c *Client) Connect() (*stream.Conn, error) {
 	conn, _, err := websocket.DefaultDialer.Dial(defaultBaseWSURL, nil)
 	if err != nil {
 		return nil, err
 	}
-	return &Conn{conn: conn}, nil
+	return &stream.Conn{Conn: conn}, nil
 }
