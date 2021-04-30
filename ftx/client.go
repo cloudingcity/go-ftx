@@ -147,5 +147,5 @@ func (c *Client) Connect() (*stream.Conn, error) {
 	if err != nil {
 		return nil, err
 	}
-	return stream.New(conn), nil
+	return stream.New(conn, c.key, c.secret, c.subaccount), nil
 }

@@ -1,8 +1,13 @@
 package stream
 
 import (
+	"crypto/hmac"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"strconv"
 
 	"github.com/gorilla/websocket"
 )
@@ -15,8 +20,16 @@ const (
 
 type connRequest struct {
 	OP      string `json:"op"`
+	Args    args   `json:"args,omitempty"`
 	Channel string `json:"channel,omitempty"`
 	Market  string `json:"market,omitempty"`
+}
+
+type args struct {
+	Key        string `json:"key"`
+	Sign       string `json:"sign"`
+	Time       int64  `json:"time"`
+	SubAccount string `json:"subaccount,omitempty"`
 }
 
 type connResponse struct {
@@ -29,11 +42,14 @@ type connResponse struct {
 }
 
 type Conn struct {
-	conn *websocket.Conn
+	conn       *websocket.Conn
+	key        string
+	secret     []byte
+	subaccount string
 }
 
-func New(conn *websocket.Conn) *Conn {
-	return &Conn{conn: conn}
+func New(conn *websocket.Conn, key string, secret []byte, subaccount string) *Conn {
+	return &Conn{conn: conn, key: key, secret: secret, subaccount: subaccount}
 }
 
 func (c *Conn) Recv() (interface{}, error) {
@@ -74,6 +90,41 @@ func (c *Conn) Recv() (interface{}, error) {
 
 func (c *Conn) Ping() error {
 	return c.conn.WriteJSON(&connRequest{OP: "ping"})
+}
+
+func (c *Conn) Login() error {
+	req := connRequest{OP: "login"}
+	if err := c.auth(&req); err != nil {
+		return err
+	}
+	marshal, _ := json.Marshal(req)
+
+	fmt.Println(string(marshal))
+
+	return c.conn.WriteJSON(&req)
+}
+
+func (c *Conn) auth(req *connRequest) error {
+	if c.key == "" || len(c.secret) == 0 {
+		return errors.New("API key and secret not configured")
+	}
+
+	t := unixTime()
+	ts := strconv.FormatInt(t, 10)
+
+	sign := []byte(ts + "websocket_login")
+	hash := hmac.New(sha256.New, c.secret)
+	hash.Write(sign)
+
+	req.Args = args{
+		Key:  c.key,
+		Sign: hex.EncodeToString(hash.Sum(nil)),
+		Time: t,
+	}
+	if c.subaccount != "" {
+		req.Args.SubAccount = c.subaccount
+	}
+	return nil
 }
 
 func (c *Conn) Subscribe(channel, market string) error {
