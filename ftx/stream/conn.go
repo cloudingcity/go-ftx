@@ -22,7 +22,7 @@ const (
 
 type connRequest struct {
 	OP      string `json:"op"`
-	Args    args   `json:"args,omitempty"`
+	Args    *args  `json:"args,omitempty"`
 	Channel string `json:"channel,omitempty"`
 	Market  string `json:"market,omitempty"`
 }
@@ -127,7 +127,7 @@ func (c *Conn) auth(req *connRequest) error {
 	hash := hmac.New(sha256.New, c.secret)
 	hash.Write(sign)
 
-	req.Args = args{
+	req.Args = &args{
 		Key:  c.key,
 		Sign: hex.EncodeToString(hash.Sum(nil)),
 		Time: t,
