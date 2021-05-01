@@ -104,7 +104,7 @@ type Orders struct {
 		Size          float64 `json:"size"`
 		Price         float64 `json:"price"`
 		ReduceOnly    bool    `json:"reduceOnly"`
-		Ioc           bool    `json:"ioc"`
+		IOC           bool    `json:"ioc"`
 		PostOnly      bool    `json:"postOnly"`
 		Status        string  `json:"status"`
 		FilledSize    float64 `json:"filledSize"`
