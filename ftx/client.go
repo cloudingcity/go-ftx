@@ -97,7 +97,9 @@ func (c *Client) do(uri string, method string, in, out interface{}, isPrivate bo
 	}
 
 	if isPrivate {
-		c.auth(req)
+		if err := c.auth(req); err != nil {
+			return err
+		}
 	}
 
 	if err := c.client.Do(req, resp); err != nil {
@@ -119,7 +121,11 @@ func (c *Client) do(uri string, method string, in, out interface{}, isPrivate bo
 }
 
 // FTX API Authentication docs: https://blog.ftx.com/blog/api-authentication/
-func (c *Client) auth(req *fasthttp.Request) {
+func (c *Client) auth(req *fasthttp.Request) error {
+	if c.key == "" || len(c.secret) == 0 {
+		return errors.New("API key and secret not configured")
+	}
+
 	var payload bytes.Buffer
 
 	ts := strconv.FormatInt(unixTime(), 10)
@@ -140,6 +146,7 @@ func (c *Client) auth(req *fasthttp.Request) {
 	if c.subaccount != "" {
 		req.Header.Set(HeaderSubaccount, c.subaccount)
 	}
+	return nil
 }
 
 func (c *Client) Connect() (*stream.Conn, error) {

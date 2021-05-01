@@ -20,7 +20,7 @@ func setup() (client *Client, srv *fasthttp.Server, teardown func()) {
 	srv = &fasthttp.Server{}
 	go srv.Serve(ln) //nolint:errcheck
 
-	c := New()
+	c := New(WithAuth("api-key", "api-secret"))
 	c.baseURL = "http://example.com/"
 	c.client = &fasthttp.Client{
 		Dial: func(addr string) (net.Conn, error) {

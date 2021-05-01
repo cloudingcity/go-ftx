@@ -89,8 +89,9 @@ func TestClient_auth(t *testing.T) {
 		const ts = 1588591511721
 		unixTime = func() int64 { return ts }
 
-		c.auth(req)
+		err := c.auth(req)
 
+		assert.NoError(t, err)
 		assert.EqualValues(t, key, req.Header.Peek(HeaderKey))
 		assert.EqualValues(t, "dbc62ec300b2624c580611858d94f2332ac636bb86eccfa1167a7777c496ee6f", req.Header.Peek(HeaderSign))
 		assert.EqualValues(t, strconv.Itoa(ts), req.Header.Peek(HeaderTS))
@@ -108,8 +109,9 @@ func TestClient_auth(t *testing.T) {
 		const ts = 1588591856950
 		unixTime = func() int64 { return ts }
 
-		c.auth(req)
+		err := c.auth(req)
 
+		assert.NoError(t, err)
 		assert.EqualValues(t, key, req.Header.Peek(HeaderKey))
 		assert.EqualValues(t, "c4fbabaf178658a59d7bbf57678d44c369382f3da29138f04cd46d3d582ba4ba", req.Header.Peek(HeaderSign))
 		assert.EqualValues(t, strconv.Itoa(ts), req.Header.Peek(HeaderTS))
