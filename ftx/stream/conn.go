@@ -107,10 +107,6 @@ func (c *Conn) Login() error {
 	if err := c.auth(&req); err != nil {
 		return err
 	}
-	marshal, _ := json.Marshal(req)
-
-	fmt.Println(string(marshal))
-
 	return c.conn.WriteJSON(&req)
 }
 
