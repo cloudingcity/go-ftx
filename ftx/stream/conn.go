@@ -98,6 +98,11 @@ func (c *Conn) Recv() (interface{}, error) {
 	}
 }
 
+func (c *Conn) RecvRaw() ([]byte, error) {
+	_, msg, err := c.conn.ReadMessage()
+	return msg, err
+}
+
 func (c *Conn) Ping() error {
 	return c.conn.WriteJSON(&connRequest{OP: "ping"})
 }
