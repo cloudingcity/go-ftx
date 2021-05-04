@@ -1,7 +1,9 @@
 package stream
 
 import (
+	"context"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 )
@@ -16,6 +18,19 @@ func TestConn_Ping(t *testing.T) {
 	resp, err := conn.RecvRaw()
 
 	assert.NoError(t, err)
+	assert.JSONEq(t, `{"op":"ping"}`, string(resp))
+}
+
+func TestConn_PingRegular(t *testing.T) {
+	conn, _, teardown := setup()
+	defer teardown()
+
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Millisecond)
+	defer cancel()
+
+	conn.PingRegular(ctx, time.Millisecond)
+
+	resp, _ := conn.RecvRaw()
 	assert.JSONEq(t, `{"op":"ping"}`, string(resp))
 }
 

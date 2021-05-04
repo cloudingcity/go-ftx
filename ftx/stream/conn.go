@@ -1,6 +1,7 @@
 package stream
 
 import (
+	"context"
 	"crypto/hmac"
 	"crypto/sha256"
 	"encoding/hex"
@@ -8,6 +9,7 @@ import (
 	"errors"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/gorilla/websocket"
 )
@@ -105,6 +107,22 @@ func (c *Conn) RecvRaw() ([]byte, error) {
 
 func (c *Conn) Ping() error {
 	return c.conn.WriteJSON(&connRequest{OP: "ping"})
+}
+
+func (c *Conn) PingRegular(ctx context.Context, duration time.Duration) {
+	go func() {
+		t := time.NewTicker(duration)
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case <-t.C:
+				if err := c.Ping(); err != nil {
+					return
+				}
+			}
+		}
+	}()
 }
 
 func (c *Conn) Login() error {

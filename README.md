@@ -76,6 +76,9 @@ import (
 )
 
 func main() {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	client := ftx.New(
 		ftx.WithAuth("your-api-key", "your-api-secret"),
 		ftx.WithSubaccount("your-subaccount"), // Omit if not using subaccounts
@@ -84,7 +87,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	
+	conn.PingRegular(ctx, 50*time.Second) // Keep connection prevent read timeout
 
+	// Ping
 	if err := conn.Ping(); err != nil {
 		log.Fatal(err)
 	}
